@@ -15,3 +15,4 @@ dependencies:
   - yt-dlp
   - pip:
     - openai-whisper
+    - unidecode

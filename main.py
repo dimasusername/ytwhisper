@@ -1,6 +1,8 @@
 import logging
 import os
+import re
 import sys
+from unidecode import unidecode
 from yt_dlp import YoutubeDL
 import whisper
 import torch
@@ -16,6 +18,21 @@ logging.basicConfig(
     ]
 )
 
+def parameterize_filename(filename):
+    """I miss you Ruby parameterize
+
+    Ensures file names are OS safe.
+    """
+
+    ascii_filename = unidecode(filename)
+    
+    # Step 2: Replace spaces with dashes
+    ascii_filename = ascii_filename.replace(" ", "-")
+    
+    # Step 3: Remove all non-alphanumeric characters except dashes and underscores
+    sanitized = re.sub(r'[^a-zA-Z0-9\-_]', '', ascii_filename)
+    
+    return sanitized
 
 def get_device():
     if torch.backends.mps.is_available():
@@ -34,7 +51,7 @@ def download_youtube_video(url, output_path='downloads'):
     try:
         ydl_opts = {
             'format': 'bestaudio/best',
-            'outtmpl': os.path.join(output_path, '%(title)s.%(ext)s'),
+            'outtmpl': os.path.join(output_path, '%(id)s.%(ext)s'),
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',
@@ -46,10 +63,23 @@ def download_youtube_video(url, output_path='downloads'):
         with YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(url, download=True)
             title = info_dict.get('title', None)
+            video_id = info_dict.get('id', None)
             ext = 'mp3'
-            audio_file = os.path.join(output_path, f"{title}.{ext}")
-            logging.info(f"Audio downloaded and converted to: {audio_file}")
-            return audio_file
+
+            # Construct paths: original and final
+            temp_filename = f"{video_id}.{ext}"
+            temp_file = os.path.join(output_path, temp_filename)
+
+            # Sanitize the title and create the final filename
+            sanitized_title = parameterize_filename(title)
+            final_filename = f"{sanitized_title}.{ext}"
+            final_file = os.path.join(output_path, final_filename)
+
+            # Rename the temporary file to the final filename
+            os.rename(temp_file, final_file)
+
+            logging.info(f"Audio downloaded and converted to: {final_file}")
+            return final_file
     except Exception as e:
         logging.error(f"Error downloading video: {e}")
         sys.exit(1)
