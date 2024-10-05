@@ -1,9 +1,10 @@
+import logging
 import os
 import sys
-import logging
 from yt_dlp import YoutubeDL
 import whisper
 import torch
+
 
 # Configure logging
 logging.basicConfig(
