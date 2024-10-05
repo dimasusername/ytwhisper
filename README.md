@@ -101,6 +101,9 @@ python main.py "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 - **Audio File**: Saved in the `downloads/` directory.
 - **Transcription**: Saved as a `.txt` file in the `transcriptions/` directory.
 
+## **Troubleshooting**
+If `yt-dlp` complains about ffmpeg location, test that ffmpeg actually works. [This thread](https://stackoverflow.com/questions/35509731/dyld-symbol-not-found-cg-jpeg-resync-to-restart) on SO may shed some light.
+
 ## 🧰 **Project Structure**
 
 ```
