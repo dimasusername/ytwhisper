@@ -1,21 +1,17 @@
 name: yTwhisper
 channels:
-  # Apple Silicon
-  # - pytorch
+  - pytorch
   - conda-forge
   - defaults
 dependencies:
-  - python=3.8
+  - python=3.12
   - numpy<2
   - ffmpeg
+  - ffmpeg-python
   - pytorch
   - torchvision
-  # Apple Silicon
-  # - torchaudio
+  - torchaudio
   - pip
+  - yt-dlp
   - pip:
-    - yt-dlp
     - openai-whisper
-    - ffmpeg-python
-    # Intel Silicon
-    - torchaudio
